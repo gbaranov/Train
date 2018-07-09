@@ -7,8 +7,14 @@ var config = {
     messagingSenderId: "98833963738"
   };
 firebase.initializeApp(config);
+var database = firebase.database();
+
+
 getData();
 
+window.setInterval(function(){
+  getData();
+}, 60000);
 
 function getData() {
   $('#table-body').empty();
@@ -21,33 +27,26 @@ function getData() {
         renderData(childData, key);
     });
   });
-
 };
 
-function setTimings() {
-  var query = firebase.database().ref().orderByKey();
-  query.once("value")
-    .then(function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-          var key = childSnapshot.key;
-          var childData = childSnapshot.val();
-          var currentTime = moment().format('HH:mm');
-          var trainStart = moment('2018-01-01 ' + childData.firsttraintime).format('HH:mm');
-          var interval = childData.frequency;
+function getMitutesAway(firsttraintime, frequency) {
+  console.log(firsttraintime);
+  var now = moment(); //todays date
+  var before = moment("2018-01-01 " + firsttraintime); // another date
+  var duration = moment.duration(now.diff(before));
+  var minutes = Math.floor(duration.asMinutes());
+  var df = minutes % frequency;
+  minutesAwayTime = frequency - df;
 
-          var differenceTime = moment.utc(moment(trainStart,"HH:mm").diff(moment(currentTime,"HH:mm"))).format("HH:mm");
-          var differenceAsMinTime = moment.duration(differenceTime).asMinutes();
-
-          var minutesAwayTime = differenceAsMinTime % interval;
-          var nextArrivalTime = moment().add(minutesAwayTime, 'minutes').format("HH:mm");
-
-          firebase.database().ref().child(key).update({
-            nextArrival : nextArrivalTime,
-            minutesAway: minutesAwayTime
-          });
-      });
-  });
+  return minutesAwayTime;
 };
+
+function getnextArrival(minutesAwayTime) {
+
+  var nextArrivalTime = moment().add(minutesAwayTime, 'minutes').format("HH:mm");
+  return nextArrivalTime;
+
+}
 
 
 function renderData(childData, key) {
@@ -56,10 +55,11 @@ function renderData(childData, key) {
   var trainName = $('<td>').text(childData.trainName);
   var destination = $('<td>').text(childData.destination);
   var frequency = $('<td>').text(childData.frequency);
-  var nextArrival = $('<td>').text(childData.nextArrival);
-  var minutesAway = $('<td>').text(childData.minutesAway);
+  var minutesAway = $('<td>').text(getMitutesAway(childData.firsttraintime, childData.frequency));
+  var nextArrival = $('<td>').text(getnextArrival(getMitutesAway(childData.firsttraintime, childData.frequency)));
   tr.append(trainName, destination, frequency, nextArrival, minutesAway);
 };
+
 
 $('#add-train').on("click", function(event) {
   event.preventDefault();
@@ -69,7 +69,6 @@ $('#add-train').on("click", function(event) {
     "trainName" : $('#train-name').val(),
     "firsttraintime" : $('#firsttraintime').val() + ":00"
   });
-  setTimings();
   getData();
 });
 
