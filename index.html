@@ -33,6 +33,20 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">Current Train Schedule</div>
                         <div class="panel-body">
+                                <table class="table">
+                                        <thead>
+                                          <tr>
+                                            <th scope="col">Train Name</th>
+                                            <th scope="col">Destination</th>
+                                            <th scope="col">Frequency (min)</th>
+                                            <th scope="col">Next Arrival</th>
+                                            <th scope="col">Minutes Away</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody id="table-body">
+
+                                        </tbody>
+                                </table>
                         </div>
                     </div>
                 </div>
@@ -47,6 +61,31 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">Add Train</div>
                         <div class="panel-body">
+                                <form class="form">
+            
+                                    <div class="form-group">
+                                        <label for="train-name">Train Name</label>
+                                        <input type="text" class="form-control" id="train-name">
+                                    </div>
+            
+                                    <div class="form-group">
+                                        <label for="destination">Destination</label>
+                                        <input type="text" class="form-control" id="destination">
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="firsttraintime">First Train Time(HH:mm - military time)</label>
+                                        <input type="text" class="form-control" id="firsttraintime">
+                                    </div>
+            
+                                    <div class="form-group">
+                                        <label for="frequency">Frequency</label>
+                                        <input type="text" class="form-control" id="frequency">
+                                    </div>                   
+            
+                                    <button type="submit" id="add-train" class="btn btn-primary">Submit</button>
+            
+                                </form>       
                         </div>
                     </div>
                 </div>
@@ -56,7 +95,8 @@
 
         <!-- Content End -->
 
-
+        <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
         <script src="assets/javascript/train.js"></script>
+        
 </body>
 </html>
